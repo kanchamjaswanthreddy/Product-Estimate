@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
-import { Lock } from "lucide-react";
+import { Lock, Home } from "lucide-react";
 
 interface PinEntryProps {
   onSuccess: () => void;
@@ -30,10 +30,10 @@ export function PinEntry({ onSuccess, onCancel, onHome, title }: PinEntryProps) 
       <Button
         onClick={onHome}
         variant="outline"
-        className="absolute top-4 left-4 bg-white/80 hover:bg-white font-bold"
+        className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/80 hover:bg-white p-2"
         title="Home"
       >
-        HOME
+        <Home className="h-5 w-5" aria-hidden="true" />
       </Button>
       <Card className="p-8 w-full max-w-md">
         <div className="text-center mb-6">

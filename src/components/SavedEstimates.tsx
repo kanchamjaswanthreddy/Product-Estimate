@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { ArrowLeft, Download, Share2, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, Share2, Trash2, Home } from "lucide-react";
 import { SavedEstimate } from "../types/estimate";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -44,20 +44,54 @@ export function SavedEstimates({ estimates, onBack, onHome }: SavedEstimatesProp
     doc.save(filename);
   };
 
-  const shareWhatsApp = (estimate: SavedEstimate) => {
-    downloadAsPdf(estimate); // triggers a download for attachment
-    const message = `Price Estimation from SRI SRI SRI LAKSHMI TRADERS\nCustomer: ${estimate.customerName}\n\n`;
-    const itemsList = estimate.items
-      .map(
-        (item, index) =>
-          `${index + 1}. ${item.productName} (${item.categoryName} - ${item.sizeName})\n   Qty: ${item.quantity} × ₹${item.price.toLocaleString()} = ₹${(
-            item.quantity * item.price
-          ).toLocaleString()}`
-      )
-      .join("\n\n");
-    const total = `\n\nTotal Amount: ₹${estimate.totalAmount.toLocaleString()}`;
-    const fullMessage = encodeURIComponent(message + itemsList + total);
-    window.open(`https://wa.me/?text=${fullMessage}`, "_blank");
+  const shareWhatsApp = async (estimate: SavedEstimate) => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("SRI SRI SRI LAKSHMI TRADERS", 105, 20, { align: "center" });
+    doc.setFontSize(12);
+    doc.text("Price Estimation", 105, 28, { align: "center" });
+    doc.text(`Customer: ${estimate.customerName}`, 14, 34);
+    doc.text(`Date: ${new Date(estimate.dateISO).toLocaleDateString()}`, 14, 40);
+
+    const tableData = estimate.items.map((item, index) => [
+      index + 1,
+      item.productName,
+      `${item.categoryName} - ${item.sizeName}`,
+      item.quantity,
+      `Rs. ${item.price.toLocaleString()}`,
+      `Rs. ${(item.quantity * item.price).toLocaleString()}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [["#", "Product Name", "Category - Size", "Qty", "Price", "Total"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [79, 70, 229] },
+      footStyles: { fillColor: [229, 231, 235], textColor: [0, 0, 0], fontStyle: "bold" },
+      foot: [["", "", "", "", "Grand Total:", `Rs. ${estimate.totalAmount.toLocaleString()}`]],
+    });
+
+    const filename = `${estimate.customerName.replace(/\s+/g, '_')}-quotation-${new Date(estimate.dateISO).toISOString().split("T")[0]}.pdf`;
+    const pdfBlob = doc.output("blob");
+    const file = new File([pdfBlob], filename, { type: "application/pdf" });
+
+    const nav: any = navigator;
+    if (nav?.canShare && nav.canShare({ files: [file] })) {
+      try {
+        await nav.share({ files: [file], title: filename });
+        return;
+      } catch (e) {
+        // fall back to download
+      }
+    }
+
+    const url = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    alert("Your device/browser doesn't allow direct file sharing. The PDF was downloaded; share it from Files/WhatsApp.");
   };
 
   const removeEstimate = (id: string) => {
@@ -77,10 +111,10 @@ export function SavedEstimates({ estimates, onBack, onHome }: SavedEstimatesProp
         </div>
         <button
           onClick={onHome}
-          className="absolute left-4 top-6 bg-white/10 hover:bg-white/20 rounded px-3 py-1 font-bold"
+          className="absolute left-3 top-3 sm:left-4 sm:top-6 bg-white/10 hover:bg-white/20 rounded p-2"
           title="Home"
         >
-          HOME
+          <Home className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 

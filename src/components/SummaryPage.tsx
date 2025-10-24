@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { ArrowLeft, Download, Share2, Save } from "lucide-react";
+import { ArrowLeft, Download, Share2, Save, Home } from "lucide-react";
 import { CartItem } from "../types/product";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -85,39 +85,29 @@ export function SummaryPage({ cart, onBack, onSave, customerName, onHome }: Summ
     doc.save(filename);
   };
 
-  const handleShareWhatsApp = () => {
+  const handleShareWhatsApp = async () => {
     const doc = generatePDF();
+    const filename = `${customerName ? customerName.replace(/\s+/g, '_') + '-' : ''}quotation-${new Date().toISOString().split("T")[0]}.pdf`;
     const pdfBlob = doc.output("blob");
+    const file = new File([pdfBlob], filename, { type: "application/pdf" });
 
-    // Create a temporary download link
+    const nav: any = navigator;
+    if (nav?.canShare && nav.canShare({ files: [file] })) {
+      try {
+        await nav.share({ files: [file], title: filename });
+        return;
+      } catch (e) {
+        // fall through to download fallback
+      }
+    }
+
+    // Fallback: download the PDF and instruct manual attach
     const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${customerName ? customerName.replace(/\s+/g, '_') + '-' : ''}quotation-${new Date().toISOString().split("T")[0]}.pdf`;
+    link.download = filename;
     link.click();
-
-    // Create WhatsApp message
-    const message = `Price Estimation from SRI SRI SRI LAKSHMI TRADERS\n\n`;
-    const itemsList = cart
-      .map(
-        (item, index) =>
-          `${index + 1}. ${item.productName} (${item.categoryName} - ${
-            item.sizeName
-          })\n   Qty: ${item.quantity} × ₹${item.price.toLocaleString()} = ₹${(
-            item.quantity * item.price
-          ).toLocaleString()}`
-      )
-      .join("\n\n");
-    const total = `\n\nTotal Amount: ₹${totalAmount.toLocaleString()}`;
-    const fullMessage = encodeURIComponent(message + itemsList + total);
-
-    // Note: PDF cannot be directly sent via WhatsApp Web URL
-    // User will need to manually attach the downloaded PDF
-    alert(
-      "PDF has been downloaded. Please manually attach it in WhatsApp to send."
-    );
-
-    window.open(`https://wa.me/?text=${fullMessage}`, "_blank");
+    alert("Your device/browser doesn't allow direct file sharing. The PDF was downloaded; share it from Files/WhatsApp.");
   };
 
   const handleSaveEstimate = () => {
@@ -145,10 +135,10 @@ export function SummaryPage({ cart, onBack, onSave, customerName, onHome }: Summ
         </div>
         <button
           onClick={onHome}
-          className="absolute left-4 top-6 bg-white/10 hover:bg-white/20 rounded px-3 py-1 font-bold"
+          className="absolute left-3 top-3 sm:left-4 sm:top-6 bg-white/10 hover:bg-white/20 rounded p-2"
           title="Home"
         >
-          HOME
+          <Home className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
@@ -222,7 +212,7 @@ export function SummaryPage({ cart, onBack, onSave, customerName, onHome }: Summ
             </div>
 
             {/* Actions */}
-            <div className="border-t pt-6 flex flex-col sm:flex-row gap-4">
+            <div className="border-t pt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button onClick={handleSaveEstimate} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
                 <Save className="h-4 w-4 mr-2" />
                 Save

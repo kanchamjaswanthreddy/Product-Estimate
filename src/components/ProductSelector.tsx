@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Home } from "lucide-react";
 import { CartItem, Category } from "../types/product";
 
 interface ProductSelectorProps {
@@ -135,10 +135,10 @@ export function ProductSelector({
         </div>
         <button
           onClick={onHome}
-          className="absolute left-4 top-6 bg-white/10 hover:bg-white/20 rounded px-3 py-1 font-bold"
+          className="absolute left-3 top-3 sm:left-4 sm:top-6 bg-white/10 hover:bg-white/20 rounded p-2"
           title="Home"
         >
-          HOME
+          <Home className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
@@ -155,7 +155,7 @@ export function ProductSelector({
                   setSelectedSize(null);
                 }}
               >
-                <TabsList className="w-full grid grid-cols-2 md:grid-cols-5 h-auto gap-2">
+                <TabsList className="w-full h-auto gap-2 grid grid-cols-2 sm:grid-cols-5">
                   {categories.map((category) => (
                     <TabsTrigger
                       key={category.id}
@@ -176,7 +176,7 @@ export function ProductSelector({
                     {/* Sizes */}
                     <div className="mb-6">
                       <h3 className="mb-3">Select Size:</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                         {category.sizes.map((size) => (
                           <Button
                             key={size.id}
@@ -212,16 +212,16 @@ export function ProductSelector({
                               return (
                                 <Card
                                   key={product.id}
-                                  className="p-4 hover:shadow-md transition-shadow"
+                                  className="p-4 pr-5 hover:shadow-md transition-shadow"
                                 >
-                                  <div className="flex items-center justify-between gap-4">
+                                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 pr-1">
                                     <div className="flex-1">
                                       <h4>{product.name}</h4>
                                       <p className="text-gray-600 mt-1">
                                         ₹{product.price.toLocaleString()}
                                       </p>
                                     </div>
-                                    <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-0">
                                       <Button
                                         variant="outline"
                                         size="icon"

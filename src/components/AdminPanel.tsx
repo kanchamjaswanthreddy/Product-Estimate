@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
-import { ArrowLeft, Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import { ArrowLeft, Plus, Edit2, Trash2, Save, X, Home } from "lucide-react";
 import { Category, Product } from "../types/product";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
@@ -123,10 +123,10 @@ export function AdminPanel({ categories, onUpdateProducts, onBack, onHome }: Adm
         </div>
         <button
           onClick={onHome}
-          className="absolute left-4 top-6 bg-white/10 hover:bg-white/20 rounded px-3 py-1 font-bold"
+          className="absolute left-3 top-3 sm:left-4 sm:top-6 bg-white/10 hover:bg-white/20 rounded p-2"
           title="Home"
         >
-          HOME
+          <Home className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
 
@@ -146,7 +146,7 @@ export function AdminPanel({ categories, onUpdateProducts, onBack, onHome }: Adm
               setAddingProduct(false);
             }}
           >
-            <TabsList className="w-full grid grid-cols-2 md:grid-cols-5 h-auto gap-2 mb-6">
+            <TabsList className="w-full h-auto gap-2 mb-6 overflow-x-auto no-scrollbar grid grid-flow-col auto-cols-max">
               {categories.map((category) => (
                 <TabsTrigger
                   key={category.id}
