@@ -212,19 +212,20 @@ export function ProductSelector({
                               return (
                                 <Card
                                   key={product.id}
-                                  className="p-4 pr-5 hover:shadow-md transition-shadow"
+                                  className="p-4 hover:shadow-md transition-shadow overflow-hidden"
                                 >
-                                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 pr-1">
+                                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 pr-1 min-w-0">
                                     <div className="flex-1">
                                       <h4>{product.name}</h4>
                                       <p className="text-gray-600 mt-1">
                                         ₹{product.price.toLocaleString()}
                                       </p>
                                     </div>
-                                    <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-0">
+                                    <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-0 w-full sm:w-auto justify-start sm:justify-end min-w-0">
                                       <Button
                                         variant="outline"
                                         size="icon"
+                                        className="shrink-0"
                                         onClick={() =>
                                           handleQuantityChange(
                                             category.id,
@@ -241,10 +242,10 @@ export function ProductSelector({
                                       >
                                         <Minus className="h-4 w-4" />
                                       </Button>
-                                      <input
+                                       <input
                                         type="number"
                                         min="0"
-                                        value={qty}
+                                         value={qty}
                                         onChange={(e) =>
                                           handleDirectQuantityInput(
                                             category.id,
@@ -257,11 +258,12 @@ export function ProductSelector({
                                             e.target.value
                                           )
                                         }
-                                        className="w-14 sm:w-16 text-center border border-gray-300 rounded px-2 py-1"
+                                         className="w-[clamp(44px,24vw,80px)] sm:w-16 text-center border border-gray-300 rounded px-2 py-1 min-w-0"
                                       />
                                       <Button
                                         variant="outline"
                                         size="icon"
+                                        className="shrink-0"
                                         onClick={() =>
                                           handleQuantityChange(
                                             category.id,
